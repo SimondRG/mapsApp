@@ -1,17 +1,18 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { Map } from 'mapbox-gl'; // Se llama este paquete preinstalado por npm para el manejo de mapas
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { LngLat, Map } from 'mapbox-gl'; // Se llama este paquete preinstalado por npm para el manejo de mapas
 
 @Component({
   templateUrl: './zomm-range-page.component.html',
   styleUrl: './zomm-range-page.component.css',
 })
-export class ZommRangePageComponent implements AfterViewInit{
+export class ZommRangePageComponent implements AfterViewInit, OnDestroy{
 
     // Permite tomar referencias del html
     @ViewChild('map') divMap?: ElementRef; 
 
     public zoom: number = 10;
     public map?:Map;
+    public currentlngLat: LngLat = new LngLat( -74.5, 40 );
 
     ngAfterViewInit(): void {
   
@@ -20,13 +21,17 @@ export class ZommRangePageComponent implements AfterViewInit{
       this.map = new Map({
         container: this.divMap.nativeElement, // container ID
         style: 'mapbox://styles/mapbox/streets-v12', // style URL
-        center: [-74.5, 40], // starting position [lng, lat]
+        center: this.currentlngLat, // starting position [lng, lat]
         zoom: this.zoom, // starting zoom
       });
       
       // Se llama la función para establecer los listeners
       this.mapListeners();
 
+    }
+    // Limpia todos los Listeners cuando se destruye el componente
+    ngOnDestroy(): void {
+      this.map?.remove();
     }
 
     mapListeners(){
@@ -42,6 +47,10 @@ export class ZommRangePageComponent implements AfterViewInit{
         this.map!.zoomTo(18);
       });
 
+      // Función que se ejecuta cuando el mapa se mueve y obtiene la latitud y longitud del centro del mapa
+      this.map.on('move', () =>{
+        this.currentlngLat = this.map!.getCenter();
+      })
 
     }
     // Permite retroceder el zoom cuando se llama esta función en algún evento
