@@ -1,18 +1,16 @@
 <div id="map" #map></div>
 
 <ul class="list-group">
-    <li class="list-group-item">
-        Markert 1
-    </li>
-    <li class="list-group-item">
-        Markert 2
-    </li>
-    <li class="list-group-item">
-        Markert 3
-    </li>
-    <li class="list-group-item">
-        Markert 4
-    </li>
+
+    @for ( colorMarker of markers; track $index) {
+        <li [ngStyle]="{ backgroundColor: colorMarker.color, color: 'white'}"
+            (dblclick)="deleteMarter( $index )"
+            (click)="flyTo( colorMarker.marker )"
+            class="list-group-item">
+            Markert {{ $index + 1 }}
+        </li>
+    }
+
 </ul>
 
 <button class="btn btn-primary" (click)="createMarker()">
