@@ -1,6 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+// Configuración para cargar los mapas
+import mapboxgl from 'mapbox-gl';
+mapboxgl.accessToken = 'pk.eyJ1Ijoic2ltb25yZyIsImEiOiJjbHgyZ3R0NDAwa2NyMmtxNmNnam00dGk1In0.gJw5BBCNeo3gvHJYW-KQig';
+
 import { MapsRoutingModule } from './maps-routing.module';
 
 import { MiniMapComponent } from './components/mini-map/mini-map.component';
