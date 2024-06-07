@@ -1,24 +1,23 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { LngLat, Map, Marker } from 'mapbox-gl'; // Se llama este paquete preinstalado por npm para el manejo de mapas
+import { MarkertAndColor, PlainMarket } from '../../interface/market.interface'
 
-interface MarkertAndColor {
-  color: string;
-  marker: Marker
-}
 
 @Component({
   templateUrl: './markers-page.component.html',
   styleUrl: './markers-page.component.css',
   host: { 'class': 'maps-page-markers' },
 })
-export class MarkersPageComponent {
-
+export class MarkersPageComponent implements AfterViewInit {
+  
   @ViewChild('map') divMap?: ElementRef; 
-
+  
   public markers: MarkertAndColor[] = [];
-
+  
   public map?:Map;
   public currentlngLat: LngLat = new LngLat( -74.13363563983047, 4.64274853854198  );
+  
+  constructor(private cdr: ChangeDetectorRef) { }
 
   ngAfterViewInit(): void {
 
@@ -31,6 +30,11 @@ export class MarkersPageComponent {
       zoom: 12, // starting zoom
     });
 
+    // Lee la información de las coordenadas y el color del market del localstorage
+    this.readFromLocalStorage();
+
+    // Forzar la detección de cambios, esto es opcional para no arrojas errores en consola
+    this.cdr.detectChanges();
   }
 
   createMarker(){
@@ -54,10 +58,8 @@ export class MarkersPageComponent {
       .setLngLat( lngLat ) // Se establecen las coordenadas
       .addTo( this.map ); // Se agrega el marcador al mapa actual
     
-    this.markers.push({
-      color: color,
-      marker: marker,
-    });
+    this.markers.push({ color: color, marker: marker, });
+    this.saveToLocalStorage();
 
   }
 
@@ -73,4 +75,27 @@ export class MarkersPageComponent {
     this.map?.flyTo({ zoom: 14, center: marker.getLngLat() });
   }
 
+  saveToLocalStorage(){
+    // Función que retorna el color y las coordenadas como arreglo
+    const plaiMarkers: PlainMarket[] = this.markers.map( ({ color, marker }) =>{
+      return {
+        color: color,
+        lngLat: marker.getLngLat().toArray(),
+      }
+    });
+    // Guarda la información de el color y las coordenadas en el local Storage
+    localStorage.setItem('plainMarkers', JSON.stringify(plaiMarkers) );
+  }
+  
+  readFromLocalStorage(){
+    const plainMarkersString = localStorage.getItem('plainMarkers') ?? '[]';
+    const plainMarkers: PlainMarket[] = JSON.parse(plainMarkersString);
+    
+    plainMarkers.forEach( ({ color, lngLat }) => {
+      const [ lng, lat  ] = lngLat;
+      const coords = new LngLat( lng, lat );
+      this.addMarker( coords, color);
+    });
+
+  }
 }
