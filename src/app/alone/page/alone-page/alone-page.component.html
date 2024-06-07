@@ -10,6 +10,9 @@
             <div class="col">
                 <p>*Este componente no necesita ser importando en módulos</p>
                 <p>Es porque es su propio módulo {{ 1 + 1 }}</p>
+
+                <!-- Contador -->
+                 <counter-alone [counter]="25" /> <!--Se le pueden envíar valores al hijo standalone desde este padre-->
             </div>
         </div>
 
