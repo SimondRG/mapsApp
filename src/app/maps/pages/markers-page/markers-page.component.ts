@@ -33,7 +33,7 @@ export class MarkersPageComponent implements AfterViewInit {
     // Lee la información de las coordenadas y el color del market del localstorage
     this.readFromLocalStorage();
 
-    // Forzar la detección de cambios, esto es opcional para no arrojas errores en consola
+    // Fuerza la detección de cambios, esto es opcional para no arrojas errores en consola
     this.cdr.detectChanges();
   }
 
@@ -57,9 +57,12 @@ export class MarkersPageComponent implements AfterViewInit {
     })
       .setLngLat( lngLat ) // Se establecen las coordenadas
       .addTo( this.map ); // Se agrega el marcador al mapa actual
-    
+
     this.markers.push({ color: color, marker: marker, });
     this.saveToLocalStorage();
+    // Actualiza el localStorage con las nuevas coordenadas, si el marcador se mueve
+    marker.on('dragend' , () => this.saveToLocalStorage());
+    
 
   }
 
