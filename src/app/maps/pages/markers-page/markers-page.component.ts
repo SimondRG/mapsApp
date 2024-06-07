@@ -71,6 +71,7 @@ export class MarkersPageComponent implements AfterViewInit {
     this.markers[index].marker.remove();
     // Elimina el marcador del arreglo basado en su indice
     this.markers.splice( index, 1 );
+    this.deleteFromLocalStorage( index );
   }
 
   // flyTo  - Método que sirve para moverse hacia el marcador señalado centrando la pantalla
@@ -100,5 +101,14 @@ export class MarkersPageComponent implements AfterViewInit {
       this.addMarker( coords, color);
     });
 
+  }
+
+  // Elimina los elementos del localStorage
+  deleteFromLocalStorage(index: number){
+    const plainMarkersString = localStorage.getItem('plainMarkers') ?? '[]';
+    const plainMarkers: string[] = JSON.parse(plainMarkersString);
+    plainMarkers.splice(index, 1);    
+    localStorage.setItem('plainMarkers', JSON.stringify(plainMarkers) );
+    
   }
 }
